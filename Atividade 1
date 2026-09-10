@@ -144,20 +144,21 @@ int main(void) {
         }
 
         if (IsKeyPressed(KEY_BACKSPACE) && quantidadeBolas > 0) {
-            quantidadeBolas--;
 
-            if (quantidadeBolas == 0) {
+            if (quantidadeBolas == 1) {
                 free(bolas);
                 bolas = NULL;
+                quantidadeBolas = 0;
             }
             else {
                 Bola *novo = (Bola *)realloc(
                     bolas,
-                    quantidadeBolas * sizeof(Bola)
+                    (quantidadeBolas - 1) * sizeof(Bola)
                 );
 
                 if (novo != NULL) {
                     bolas = novo;
+                    quantidadeBolas--;
                 }
             }
         }
@@ -192,7 +193,8 @@ int main(void) {
             DrawText("Matriz (int**) e vetor de structs (Bola*) alocados com malloc",
                      10, 10, 18, WHITE);
 
-            DrawText("Pressione ESC para sair", 10, ALTURA_JANELA - 25, 16, WHITE);
+            DrawText("Pressione ESC para sair",
+                     10, ALTURA_JANELA - 25, 16, WHITE);
 
             DrawText(
                 TextFormat("Bolas: %d", quantidadeBolas),
