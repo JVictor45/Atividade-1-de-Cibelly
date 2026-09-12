@@ -1,26 +1,3 @@
-/*
- * Union + Enum + Struct + Alocação Dinâmica com raylib
- * ---------------------------------------------------------------
- * Evolução da atividade2: agora os itens coletáveis podem ser de
- * dois tipos bem diferentes (uma ARMA ou uma POÇÃO) e usam uma
- * UNION para guardar, no mesmo espaço de memória, o dado específico
- * de cada tipo. O campo enum funciona como "tag" que diz qual campo
- * da union deve ser lido (padrão conhecido como "tagged union").
- *
- * Conceitos praticados:
- *   - union (DadosItem): arma e poção nunca existem ao mesmo tempo,
- *     então compartilham o mesmo espaço de memória
- *   - enum (TipoItem) usado como "tag" para saber qual campo da
- *     union é válido naquele momento
- *   - struct que combina enum + union + outros campos
- *   - malloc / free de um vetor dinâmico de struct
- *   - ponteiro para struct (Item *, Jogador *) passado para funções
- *     que alteram o dado original
- *
- * Compilar (Linux, com raylib instalada):
- *   gcc atividade3.c -o atividade3 -lraylib -lm -lpthread -ldl -lrt -lX11
- */
-
 #include "raylib.h"
 #include <stdlib.h>
 #include <time.h>
