@@ -32,7 +32,6 @@ void ordenarBubbleSort(Placar *vetor, int n, long *comparacoes, long *trocas) {
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - 1 - i; j++) {
             (*comparacoes)++;
-
             if (vetor[j].pontuacao > vetor[j + 1].pontuacao) {
                 Placar temp = vetor[j];
                 vetor[j] = vetor[j + 1];
@@ -43,7 +42,7 @@ void ordenarBubbleSort(Placar *vetor, int n, long *comparacoes, long *trocas) {
     }
 }
 
-/* ---- EXERCÍCIO 1: insertion sort ---- */
+/* ---- exercício 1: insertion sort ---- */
 void ordenarInsertionSort(Placar *vetor, int n, long *comparacoes, long *trocas) {
     *comparacoes = 0;
     *trocas = 0;
@@ -71,41 +70,26 @@ void ordenarInsertionSort(Placar *vetor, int n, long *comparacoes, long *trocas)
 /* ---- busca sequencial: O(n), funciona em qualquer ordem ---- */
 int buscaSequencial(Placar *vetor, int n, int alvo, long *comparacoes) {
     *comparacoes = 0;
-
     for (int i = 0; i < n; i++) {
         (*comparacoes)++;
-
-        if (vetor[i].pontuacao == alvo) {
-            return i;
-        }
+        if (vetor[i].pontuacao == alvo) return i;
     }
-
     return -1;
 }
 
 /* ---- busca binária: O(log n), exige vetor ordenado ---- */
 int buscaBinaria(Placar *vetor, int n, int alvo, long *comparacoes) {
     *comparacoes = 0;
-
-    int inicio = 0;
-    int fim = n - 1;
+    int inicio = 0, fim = n - 1;
 
     while (inicio <= fim) {
         (*comparacoes)++;
-
         int meio = (inicio + fim) / 2;
 
-        if (vetor[meio].pontuacao == alvo) {
-            return meio;
-        }
-
-        if (vetor[meio].pontuacao < alvo) {
-            inicio = meio + 1;
-        } else {
-            fim = meio - 1;
-        }
+        if (vetor[meio].pontuacao == alvo) return meio;
+        if (vetor[meio].pontuacao < alvo) inicio = meio + 1;
+        else                              fim = meio - 1;
     }
-
     return -1;
 }
 
@@ -118,218 +102,83 @@ void desenharBarras(Placar *vetor, int n, int indiceDestacado) {
         int y = ALTURA_JANELA - 60 - altura;
 
         Color cor = (i == indiceDestacado) ? LIME : SKYBLUE;
-
         DrawRectangle(x + 2, y, larguraBarra - 4, altura, cor);
-
-        DrawText(
-            TextFormat("%d", vetor[i].pontuacao),
-            x + 4,
-            y - 18,
-            12,
-            DARKGRAY
-        );
+        DrawText(TextFormat("%d", vetor[i].pontuacao), x + 4, y - 18, 12, DARKGRAY);
     }
 }
 
 int main(void) {
     srand((unsigned int)time(NULL));
 
-    InitWindow(
-        LARGURA_JANELA,
-        ALTURA_JANELA,
-        "Atividade 7 - Complexidade: Busca e Ordenacao"
-    );
-
+    InitWindow(LARGURA_JANELA, ALTURA_JANELA, "Atividade 7 - Complexidade: Busca e Ordenacao");
     SetTargetFPS(60);
 
     Placar *placares = criarPlacares(TOTAL_PLACARES);
-
-    if (placares == NULL) {
-        CloseWindow();
-        return 1;
-    }
-
     bool ordenado = false;
 
-    long comparacoes = 0;
-    long trocas = 0;
-
+    long comparacoes = 0, trocas = 0;
     double tempoBubble = 0.0;
 
-    int alvo = placares[
-        GetRandomValue(0, TOTAL_PLACARES - 1)
-    ].pontuacao;
-
+    int alvo = placares[GetRandomValue(0, TOTAL_PLACARES - 1)].pontuacao;
     int indiceEncontrado = -1;
-
-    char resultado[128] =
-        "Pressione Q para buscar (sequencial) ou W (binaria)";
+    char resultado[96] = "Pressione Q para buscar (sequencial) ou W (binaria)";
 
     while (!WindowShouldClose()) {
 
-        /* EXERCÍCIO 2: Bubble Sort medindo o tempo */
         if (IsKeyPressed(KEY_O)) {
-
             double inicio = GetTime();
 
-            ordenarBubbleSort(
-                placares,
-                TOTAL_PLACARES,
-                &comparacoes,
-                &trocas
-            );
+            ordenarBubbleSort(placares, TOTAL_PLACARES, &comparacoes, &trocas);
 
             double fim = GetTime();
-
             tempoBubble = (fim - inicio) * 1000.0;
 
             ordenado = true;
             indiceEncontrado = -1;
-
-            TextCopy(
-                resultado,
-                TextFormat(
-                    "Bubble: %ld comparacoes, %ld trocas, %.6f ms",
-                    comparacoes,
-                    trocas,
-                    tempoBubble
-                )
-            );
+            TextCopy(resultado, TextFormat("Bubble: %ld comparacoes, %ld trocas, %.6f ms",
+                                           comparacoes, trocas, tempoBubble));
         }
 
-        /* EXERCÍCIO 1: tecla I executa Insertion Sort */
         if (IsKeyPressed(KEY_I)) {
-
-            ordenarInsertionSort(
-                placares,
-                TOTAL_PLACARES,
-                &comparacoes,
-                &trocas
-            );
-
+            ordenarInsertionSort(placares, TOTAL_PLACARES, &comparacoes, &trocas);
             ordenado = true;
             indiceEncontrado = -1;
-
-            TextCopy(
-                resultado,
-                TextFormat(
-                    "Insertion sort: %ld comparacoes, %ld trocas",
-                    comparacoes,
-                    trocas
-                )
-            );
+            TextCopy(resultado, TextFormat("Insertion: %ld comparacoes, %ld trocas",
+                                           comparacoes, trocas));
         }
 
         if (IsKeyPressed(KEY_N)) {
-
-            alvo = placares[
-                GetRandomValue(0, TOTAL_PLACARES - 1)
-            ].pontuacao;
-
+            alvo = placares[GetRandomValue(0, TOTAL_PLACARES - 1)].pontuacao;
             indiceEncontrado = -1;
-
-            TextCopy(
-                resultado,
-                TextFormat("Novo alvo sorteado: %d", alvo)
-            );
+            TextCopy(resultado, TextFormat("Novo alvo sorteado: %d", alvo));
         }
 
         if (IsKeyPressed(KEY_Q)) {
-
-            indiceEncontrado = buscaSequencial(
-                placares,
-                TOTAL_PLACARES,
-                alvo,
-                &comparacoes
-            );
-
-            TextCopy(
-                resultado,
-                TextFormat(
-                    "Busca sequencial por %d: %ld comparacoes (O(n))",
-                    alvo,
-                    comparacoes
-                )
-            );
+            indiceEncontrado = buscaSequencial(placares, TOTAL_PLACARES, alvo, &comparacoes);
+            TextCopy(resultado, TextFormat("Busca sequencial por %d: %ld comparacoes (O(n))", alvo, comparacoes));
         }
 
         if (IsKeyPressed(KEY_W)) {
-
             if (!ordenado) {
-
-                TextCopy(
-                    resultado,
-                    "Ordene primeiro com O ou I!"
-                );
-
+                TextCopy(resultado, "Ordene primeiro com O -- busca binaria exige vetor ordenado!");
             } else {
-
-                indiceEncontrado = buscaBinaria(
-                    placares,
-                    TOTAL_PLACARES,
-                    alvo,
-                    &comparacoes
-                );
-
-                TextCopy(
-                    resultado,
-                    TextFormat(
-                        "Busca binaria por %d: %ld comparacoes (O(log n))",
-                        alvo,
-                        comparacoes
-                    )
-                );
+                indiceEncontrado = buscaBinaria(placares, TOTAL_PLACARES, alvo, &comparacoes);
+                TextCopy(resultado, TextFormat("Busca binaria por %d: %ld comparacoes (O(log n))", alvo, comparacoes));
             }
         }
 
         BeginDrawing();
-
             ClearBackground(RAYWHITE);
 
-            desenharBarras(
-                placares,
-                TOTAL_PLACARES,
-                indiceEncontrado
-            );
+            desenharBarras(placares, TOTAL_PLACARES, indiceEncontrado);
 
-            DrawText(
-                TextFormat(
-                    "Alvo da busca: %d   Vetor ordenado: %s",
-                    alvo,
-                    ordenado ? "SIM" : "NAO"
-                ),
-                10,
-                10,
-                20,
-                DARKGRAY
-            );
+            DrawText(TextFormat("Alvo da busca: %d   Vetor ordenado: %s", alvo, ordenado ? "SIM" : "NAO"),
+                      10, 10, 20, DARKGRAY);
+            DrawText(resultado, 10, 34, 18, MAROON);
+            DrawText(TextFormat("Tempo Bubble: %.6f ms", tempoBubble), 10, 56, 16, DARKGRAY);
 
-            DrawText(
-                resultado,
-                10,
-                34,
-                18,
-                MAROON
-            );
-
-            DrawText(
-                TextFormat(
-                    "Tempo Bubble Sort: %.6f ms",
-                    tempoBubble
-                ),
-                10,
-                58,
-                18,
-                DARKGRAY
-            );
-
-            DrawText(
-                "O Bubble | I Insertion | N novo alvo | Q sequencial | W binaria | ESC sai",
-                10,
-                ALTURA_JANELA - 25,
-                16,
-                GRAY
-            );
+            DrawText("O ordena | I insertion | N novo alvo | Q sequencial | W binaria | ESC sai",
+                      10, ALTURA_JANELA - 25, 16, GRAY);
 
         EndDrawing();
     }
@@ -337,6 +186,5 @@ int main(void) {
     free(placares);
 
     CloseWindow();
-
     return 0;
 }
